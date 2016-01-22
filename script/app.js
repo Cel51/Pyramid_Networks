@@ -249,8 +249,9 @@ function initTerminal() {
         }
         else {
           term.echo("\n");
+
           if(arg != null) {
-            scPlayer.play(arg);
+            scPlayer.play({playlistIndex: arg});
             term.error(arg + "\t\t" + scPlayer._playlist.tracks[arg].title + " is playing");
           }
           else {
@@ -259,11 +260,13 @@ function initTerminal() {
             term.error(scPlayer._playlistIndex + "\t\t" + scPlayer._playlist.tracks[scPlayer._playlistIndex].title + " is playing");
           }
 
+          scCurr = scPlayer._playlistIndex;
           term.echo("\n");
         }
       },
       "pause" : function() {
         var term = this;
+
         if(scPlayer._playlist == undefined) {
           term.echo("\n");
           term.error("You must load a playlist first !");
@@ -272,9 +275,22 @@ function initTerminal() {
         else {
           scPlayer.pause();
           term.echo("\n");
-          //scCurr = scPlayer._playlistIndex;
-
           term.error(scPlayer._playlistIndex + "\t\t" + scPlayer._playlist.tracks[scPlayer._playlistIndex].title + " is paused");
+          scCurr = scPlayer._playlistIndex;
+          term.echo("\n");
+        }
+      },
+      "resume": function() {
+        var term = this;
+
+        if(scPlayer._playlist == undefined) {
+          term.echo("\n");
+          term.error("You must load a playlist first !");
+          term.echo("\n");
+        } else {
+          scPlayer.play({playlistIndex: scCurr});
+          term.echo("\n");
+          term.error(scPlayer._playlistIndex + "\t\t" + scPlayer._playlist.tracks[scPlayer._playlistIndex].title + " is resumed");
           term.echo("\n");
         }
       },
@@ -315,6 +331,7 @@ function initTerminal() {
       },
       "help" : function() {
         this.echo("\n");
+        this.error("login :"); this.echo("login in your account"); this.echo("\n");
         this.error("load :"); this.echo("load a playlist (see help inside the function)"); this.echo("\n");
         this.error("currentplaylist :"); this.echo("see the current playlist loaded"); this.echo("\n");
         this.error("currentsong :"); this.echo("see the current song playing"); this.echo("\n");
@@ -487,26 +504,6 @@ function initSize() {
         mxHeight = $(elem).height();
   });
   $("#favorites-board .favorite").height(mxHeight);
-}
-
-function addTab(tab, name) {
-  $("#tabs").append('<span id="' + tab + '" class="t-tab">' + name + '</span>');
-  $("#terminal-board .terminals").append('<div class="terminal-term '+tab+'"><div id="' + tab + '"></div></div>');
-
-  $(".t-tab").click(function() {
-    showTab($(this).attr('id'));
-  })
-}
-
-function showTab(tab) {
-  $(".terminal-term.active").removeClass("active");
-  $(".terminal-term #" + tab).parent().addClass("active");
-  $("#tabs span.active").removeClass("active");
-  $("#tabs span#" + tab).addClass("active");
-
-  // $(".terminal#" + tab).css({
-  //   height: $("#main-board").height() - 20
-  // });
 }
 
 $(document).ready(function() {
